@@ -13,6 +13,7 @@ app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///movies.db"
 Bootstrap5(app)
 db.init_app(app)
 
+
 class Movie(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(250), unique=True, nullable=False)
@@ -20,14 +21,17 @@ class Movie(db.Model):
     description = db.Column(db.String(250), nullable=False)
     rating = db.Column(db.Float, nullable=False)
     ranking = db.Column(db.Integer, nullable=False)
+    review = db.Column(db.String(250), nullable=False)
+    img_url = db.Column(db.String(250), nullable=False)
 
-# with app.app_context():
-#     db.create_all()
 
+with app.app_context():
+    db.create_all()
 
 @app.route("/")
 def home():
-    return render_template("index.html")
+    all_movies = db.session.query(Movie).all()
+    return render_template("index.html", movies=all_movies)
 
 
 if __name__ == '__main__':
