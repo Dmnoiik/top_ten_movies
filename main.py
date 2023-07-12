@@ -1,9 +1,7 @@
 from flask import Flask, render_template, redirect, url_for, request
 from flask_bootstrap import Bootstrap5
 from flask_sqlalchemy import SQLAlchemy
-from flask_wtf import FlaskForm
-from wtforms import StringField, SubmitField
-from wtforms.validators import DataRequired
+from edit_form import EditForm
 import requests
 
 app = Flask(__name__)
@@ -33,6 +31,20 @@ def home():
     all_movies = db.session.query(Movie).all()
     return render_template("index.html", movies=all_movies)
 
-
+@app.route('/edit', methods=['GET', 'POST'])
+def edit_movie():
+    edit = EditForm()
+    if request.method == 'POST':
+        new_rating = float(request.form['rating_field'])
+        new_review = request.form['review_field']
+        with app.app_context():
+            current_movie = db.get_or_404(Movie, request.args['id'])
+            current_movie.rating = new_rating
+            current_movie.review = new_review
+            db.session.commit()
+        return redirect('/')
+    if request.method == "GET":
+        current_id = request.args['id']
+        return render_template('edit.html', form=edit, movie_id=current_id)
 if __name__ == '__main__':
     app.run(debug=True)
