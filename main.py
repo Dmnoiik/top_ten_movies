@@ -1,7 +1,7 @@
 from flask import Flask, render_template, redirect, url_for, request
 from flask_bootstrap import Bootstrap5
 from flask_sqlalchemy import SQLAlchemy
-from edit_form import EditForm
+from forms import EditForm, AddForm
 import requests
 
 app = Flask(__name__)
@@ -57,8 +57,24 @@ def delete_movie():
             db.session.commit()
         return redirect('/')
 
-@app.route('/add')
+@app.route('/add', methods=["GET", "POST"])
 def add_movie():
-    return render_template('add.html')
+    add_form = AddForm()
+    if request.method == "POST":
+        with app.app_context():
+            new_movie = Movie(
+                title=request.form['title'],
+                year=request.form['year'],
+                description=request.form['description'],
+                rating=request.form['rating'],
+                review=request.form['review'],
+                ranking=request.form['ranking'],
+                img_url=request.form['img_url']
+            )
+            db.session.add(new_movie)
+            db.session.commit()
+        return redirect('/')
+    if request.method == "GET":
+        return render_template('add.html', form=add_form)
 if __name__ == '__main__':
     app.run(debug=True)
