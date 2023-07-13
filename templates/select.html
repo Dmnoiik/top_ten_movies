@@ -6,7 +6,9 @@
 <div class="container">
     <h1 class="heading">Select Movie</h1>
   <p>
-    <a href="#"> MOVIE TITLE - MOVIE RELEASE DATE</a>
+    {% for movie in movies %}
+    <a href="{{ url_for('add_movie', id=movie['id']) }}"> {{ movie['original_title'] }} - {{ movie['release_date'].split('-')[0] }}</a> <br>
+      {% endfor %}
   </p>
 
 </div>
