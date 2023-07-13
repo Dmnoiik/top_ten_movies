@@ -1,5 +1,5 @@
 import requests
-from credentials import movies_api, movies_read_access
+from credentials import movies_read_access
 from flask import request
 def get_all_movies(movie_query):
     url = "https://api.themoviedb.org/3/search/movie"
@@ -19,3 +19,4 @@ def get_movie(movie_id):
         "Authorization": F"Bearer {movies_read_access}"
     }
     return requests.get(url, headers=headers).json()
+
