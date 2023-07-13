@@ -36,6 +36,7 @@ def home():
     all_movies_copy.reverse()
     for index, movie in enumerate(all_movies_copy):
         movie.ranking = index + 1
+        db.session.commit()
     return render_template("index.html", movies=all_movies)
 
 @app.route('/edit', methods=['GET', 'POST'])
@@ -51,7 +52,6 @@ def edit_movie():
             db.session.commit()
         return redirect('/')
     if request.method == "GET":
-        print(request.args)
         current_id = request.args['id']
         return render_template('edit.html', form=edit, movie_id=current_id)
 
