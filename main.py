@@ -61,9 +61,11 @@ def delete_movie():
 def add_movie():
     add_form = AddForm()
     if request.method == "POST":
-
+        movie_title = request.form['title']
+        response = requests.get('')
         return render_template('select.html')
     if request.method == "GET":
         return render_template('add.html', form=add_form)
+
 if __name__ == '__main__':
     app.run(debug=True)
