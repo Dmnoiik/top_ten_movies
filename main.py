@@ -86,10 +86,6 @@ def add_movie():
                     description=response['overview'],
                     year=int(response['release_date'].split('-')[0]),
                     img_url='https://image.tmdb.org/t/p/w500' + response['poster_path'],
-                    rating=None,
-                    review=None,
-                    ranking=None
-
                 )
                 db.session.add(new_movie)
                 db.session.commit()
