@@ -47,5 +47,14 @@ def edit_movie():
     if request.method == "GET":
         current_id = request.args['id']
         return render_template('edit.html', form=edit, movie_id=current_id)
+
+@app.route('/delete', methods=['GET'])
+def delete_movie():
+    if request.method == "GET":
+        with app.app_context():
+            movie_to_delete = db.get_or_404(Movie, request.args['id'])
+            db.session.delete(movie_to_delete)
+            db.session.commit()
+        return redirect('/')
 if __name__ == '__main__':
     app.run(debug=True)
