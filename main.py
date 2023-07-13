@@ -37,6 +37,7 @@ def edit_movie():
     if request.method == 'POST':
         new_rating = float(request.form['rating_field'])
         new_review = request.form['review_field']
+        print(new_rating)
         with app.app_context():
             current_movie = db.get_or_404(Movie, request.args['id'])
             current_movie.rating = new_rating
