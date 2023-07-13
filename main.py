@@ -56,5 +56,9 @@ def delete_movie():
             db.session.delete(movie_to_delete)
             db.session.commit()
         return redirect('/')
+
+@app.route('/add')
+def add_movie():
+    return render_template('add.html')
 if __name__ == '__main__':
     app.run(debug=True)
