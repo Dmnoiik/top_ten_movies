@@ -3,6 +3,7 @@ from flask_bootstrap import Bootstrap5
 from flask_sqlalchemy import SQLAlchemy
 from forms import EditForm, AddForm
 from credentials import movies_api, movies_read_access
+from functions import get_movie, get_all_movies
 import requests
 
 app = Flask(__name__)
@@ -62,30 +63,17 @@ def add_movie():
     add_form = AddForm()
     if request.method == "POST":
         movie_title = request.form['title']
-        url = "https://api.themoviedb.org/3/search/movie"
-        params = {
-            "query": movie_title
-        }
-        headers = {
-            "accept": "application/json",
-            "Authorization": F"Bearer {movies_read_access}"
-        }
-        response = requests.get(url, params=params, headers=headers).json()['results']
-        return render_template('select.html', movies=response)
+        all_movies = get_all_movies(movie_title)
+        return render_template('select.html', movies=all_movies)
     if request.method == "GET":
         if len(request.args) == 1:
-            url = F"https://api.themoviedb.org/3/movie/{request.args['id']}"
-            headers = {
-                "accept": "application/json",
-                "Authorization": F"Bearer {movies_read_access}"
-            }
-            response = requests.get(url, headers=headers).json()
+            found_movie = get_movie(request.args['id'])
             with app.app_context():
                 new_movie = Movie(
-                    title=response['original_title'],
-                    description=response['overview'],
-                    year=int(response['release_date'].split('-')[0]),
-                    img_url='https://image.tmdb.org/t/p/w500' + response['poster_path'],
+                    title=found_movie['original_title'],
+                    description=found_movie['overview'],
+                    year=int(found_movie['release_date'].split('-')[0]),
+                    img_url='https://image.tmdb.org/t/p/w500' + found_movie['poster_path'],
                 )
                 db.session.add(new_movie)
                 db.session.commit()
