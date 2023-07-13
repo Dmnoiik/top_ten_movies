@@ -14,6 +14,7 @@ Bootstrap5(app)
 db.init_app(app)
 
 
+
 class Movie(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(250), unique=True, nullable=False)
@@ -30,7 +31,11 @@ with app.app_context():
 
 @app.route("/")
 def home():
-    all_movies = db.session.query(Movie).all()
+    all_movies = db.session.query(Movie).order_by(Movie.rating).all()
+    all_movies_copy = all_movies.copy()
+    all_movies_copy.reverse()
+    for index, movie in enumerate(all_movies_copy):
+        movie.ranking = index + 1
     return render_template("index.html", movies=all_movies)
 
 @app.route('/edit', methods=['GET', 'POST'])
@@ -46,6 +51,7 @@ def edit_movie():
             db.session.commit()
         return redirect('/')
     if request.method == "GET":
+        print(request.args)
         current_id = request.args['id']
         return render_template('edit.html', form=edit, movie_id=current_id)
 
@@ -63,8 +69,7 @@ def add_movie():
     add_form = AddForm()
     if request.method == "POST":
         movie_title = request.form['title']
-        all_movies = get_all_movies(movie_title)
-        return render_template('select.html', movies=all_movies)
+        return render_template('select.html', movies=get_all_movies(movie_title))
     if request.method == "GET":
         if len(request.args) == 1:
             found_movie = get_movie(request.args['id'])
@@ -77,7 +82,8 @@ def add_movie():
                 )
                 db.session.add(new_movie)
                 db.session.commit()
-            return redirect('/')
+                new_movie_id = new_movie.id
+            return redirect(url_for("edit_movie", id=new_movie_id))
         else:
             return render_template('add.html', form=add_form)
 
